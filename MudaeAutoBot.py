@@ -5,24 +5,8 @@ import json
 import time
 import logging
 import threading
+
 from utils import *
-
-from collections import OrderedDict
-
-class CacheDict(OrderedDict):
-    def __init__(self, *args, **kwds):
-        self.max = kwds.pop("max", None)
-        OrderedDict.__init__(self, *args, **kwds)
-        self._check_size_limit()
-
-    def __setitem__(self, key, value):
-        OrderedDict.__setitem__(self, key, value)
-        self._check_size_limit()
-
-    def _check_size_limit(self):
-        if self.max is not None:
-            while len(self) > self.max:
-                self.popitem(last=False)
 
 msg_buf = CacheDict(max=50)
 
