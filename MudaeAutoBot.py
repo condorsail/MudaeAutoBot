@@ -5,6 +5,7 @@ import json
 import time
 import logging
 import threading
+from utils import *
 
 from collections import OrderedDict
 
@@ -44,7 +45,6 @@ sniping = settings.get("sniping_enabled",True)
 
 ready = False
 
-mention_finder = re.compile(r'\<@!(\d+)\>')
 pagination_finder = re.compile(r'\d+ / \d+')
 
 kak_finder = re.compile(r'\*\*??([0-9]+)\*\*<:kakera:469835869059153940>')
@@ -57,7 +57,6 @@ ser_finder = re.compile(r'.*.')
 
 KakeraVari = [kakerav.lower() for kakerav in settings["emoji_list"]]
 eventlist = ["🕯️","😆"]
-
 
 kakera_wall = {}
 waifu_wall = {}
@@ -189,41 +188,11 @@ def parse_settings_message(message):
 
     return settings
 
-def get_snipe_time(channel,rolled,message):
+def get_snipe_time_new(channel,rolled,message):
     # Returns delay for when you are able to snipe a given roll
     r,d = channel_settings[channel]['claim_snipe']
-    if r == 0:
-        # Anarchy FTW!
-        return 0.0
-    
     global user
-    is_roller = (rolled == user['id'])
-    if (r < 4 or r == 5) and is_roller:
-        # Roller can insta-snipe
-        return 0.0
-    if r == 2 and not is_roller:
-        # Not the roller.
-        return d
-    
-    wished_for = mention_finder.findall(message)
-    
-    # Wish-based rules
-    if not len(wished_for):
-        # Not a WISHED character
-        if r > 4:
-            # Combined restriction, roller still gets first dibs
-            return 0.0 if is_roller else d
-        return 0.0
-    
-    if r > 2 and user['id'] in wished_for:
-        # Wishers can insta-snipe
-        return 0.0
-    
-    if r == 1 and rolled not in wished_for:
-        # Roller (who is not us) did not wish for char, so can insta-snipe
-        return 0.0
-    
-    return d
+    0.0 if snipe_logic[r](rolled,user['id'],message) else d
 
 def next_claim(channel):
     channel = int(channel)
