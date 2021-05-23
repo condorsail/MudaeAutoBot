@@ -188,7 +188,7 @@ def parse_settings_message(message):
 
     return settings
 
-def get_snipe_time_new(channel,rolled,message):
+def get_snipe_time(channel,rolled,message):
     # Returns delay for when you are able to snipe a given roll
     r,d = channel_settings[channel]['claim_snipe']
     global user
