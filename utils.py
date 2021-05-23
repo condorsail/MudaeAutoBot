@@ -1,6 +1,22 @@
 import re
+from collections import OrderedDict
 
 mention_finder = re.compile(r'\<@!(\d+)\>').findall
+
+class CacheDict(OrderedDict):
+    def __init__(self, *args, **kwds):
+        self.max = kwds.pop("max", None)
+        OrderedDict.__init__(self, *args, **kwds)
+        self._check_size_limit()
+
+    def __setitem__(self, key, value):
+        OrderedDict.__setitem__(self, key, value)
+        self._check_size_limit()
+
+    def _check_size_limit(self):
+        if self.max is not None:
+            while len(self) > self.max:
+                self.popitem(last=False)
 
 # Sniping rules
 def anarchy(rolled,user,message):
