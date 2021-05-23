@@ -157,8 +157,7 @@ def parse_settings_message(message):
     settings['expiry'] = float(num_parse(settings_p[6])[0])
     settings['claim_snipe'] = [float(v) for v in num_parse(settings_p[15])]
     settings['kak_snipe'] = [float(v) for v in num_parse(settings_p[16])]
-
-    settings['claim_snipe'][0] = int(settings['claim_snipe'][0])
+    
     # pad out claim/kak snipe for default '0 second cooldown'
     if len(settings['claim_snipe']) < 2:
         settings['claim_snipe'] += [0.0]
